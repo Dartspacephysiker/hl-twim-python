@@ -57,7 +57,11 @@ module Base
     real(8),allocatable  :: gpbar(:,:),gvbar(:,:),gwbar(:,:) ! alfs for geo coordinates
     real(8),allocatable  :: spbar(:,:),svbar(:,:),swbar(:,:) ! alfs MLT calculation
     real(8)              :: glatalf = -1.d32
-    real(4)              :: xlat=0.0
+    ! ORIG
+    ! real(4)              :: xlat=0.0
+    ! TRY
+    real(8)              :: xlat=0.0
+    ! ENDTRY
     logical              :: baseinit = .true.
 
 end module base
@@ -72,11 +76,19 @@ module base1
     integer(4)                 :: termarr(0:3,0:2175)    ! 3 x nterm index of coupled terms
     integer(4)                 :: termarr1(0:3,0:2175)    ! 3 x nterm index of coupled terms
     integer(4)                 :: termarr2(0:3,0:2175)    ! 3 x nterm index of coupled terms
+    ! ORIG
     real(4)                    :: coeffx(0:2175)          ! Model coefficients
     real(4)                    :: coeffx1(0:2175)          ! Model coefficients
     real(4)                    :: coeffx2(0:2175)          ! Model coefficients
     real(4),allocatable        :: vshterms(:,:)     ! VSH basis values
-    real(4),allocatable        :: termval(:,:)      ! Term values to which coefficients are applied
+    ! real(4),allocatable        :: termval(:,:)      ! Term values to which coefficients are applied
+    ! TRY
+    ! real(8)                    :: coeffx(0:2175)          ! Model coefficients
+    ! real(8)                    :: coeffx1(0:2175)          ! Model coefficients
+    ! real(8)                    :: coeffx2(0:2175)          ! Model coefficients
+    ! real(8),allocatable        :: vshterms(:,:)     ! VSH basis values
+    real(8),allocatable        :: termval(:,:)      ! Term values to which coefficients are applied
+    ! ENDTRY
     real(8),allocatable        :: dpbar(:,:)        ! Associated lengendre fns
     real(8),allocatable        :: dvbar(:,:)        ! Associated lengendre fns
     real(8),allocatable        :: dwbar(:,:)        ! Associated lengendre fns
@@ -209,6 +221,8 @@ subroutine inithltwim1(nmaxout,mmaxout)
     call findandopen(xdefault1,23)
     read(23) nterm, mmax, nmax, termarr1, coeffx1
     close(23)
+    ! print *,"nterm:",nterm
+    ! print *,"termarr1:",termarr1
     call findandopen(xdefault2,23)
     read(23) nterm, mmax, nmax, termarr2, coeffx2
     close(23)
@@ -276,17 +290,34 @@ subroutine HLTWIM(DAY,UT,GLAT,GLON,KP,W,MW)
     implicit none
 
     INTEGER,intent(in)      :: DAY
-    REAL(4),intent(in)      :: UT,GLAT,GLON
-    REAL(4),intent(in)      :: KP
-    REAL(4),intent(out)     :: W(2), MW(2)
-    real(4), save           :: mlat, mlon, mlt
-    real(4)                 :: mmwind, mzwind
-    real(4), save           :: f1e, f1n, f2e, f2n
-    real(4), save           :: glatlast=1.0e16, glonlast=1.0e16
-    real(4), save           :: daylast=1.0e16, utlast=1.0e16, kplast=1.0e16
-    real(4), external       ::  mltcalc
+    ! ORIG
+    ! REAL(4),intent(in)      :: UT,GLAT,GLON
+    ! REAL(4),intent(in)      :: KP
+    ! REAL(4),intent(out)     :: W(2), MW(2)
+    ! real(4), save           :: mlat, mlon, mlt
+    ! real(4)                 :: mmwind, mzwind
+    ! real(4), save           :: f1e, f1n, f2e, f2n
+    ! real(4), save           :: glatlast=1.0e16, glonlast=1.0e16
+    ! real(4), save           :: daylast=1.0e16, utlast=1.0e16, kplast=1.0e16
+    ! real(4), external       ::  mltcalc
+    ! TRY
+    REAL(8),intent(in)      :: UT,GLAT,GLON
+    REAL(8),intent(in)      :: KP
+    REAL(8),intent(out)     :: W(2), MW(2)
+    real(8), save           :: mlat, mlon, mlt
+    real(8)                 :: mmwind, mzwind
+    real(8), save           :: f1e, f1n, f2e, f2n
+    real(8), save           :: glatlast=1.0e16, glonlast=1.0e16
+    real(8), save           :: daylast=1.0e16, utlast=1.0e16, kplast=1.0e16
+    real(8), external       ::  mltcalc
+    ! ENDTRY
 	
     xlat=glat
+    print *,"DAY:",DAY
+    print *,"UT:",UT
+    print *,"GLAT:",GLAT
+    print *,"GLON:",GLON
+    print *,"KP:",KP
     IF (DAY .le. 0) ERROR STOP "Hello!! day<=0 not allowed"
     IF (DAY .gt. 366) ERROR STOP "Hello!! day>366 not allowed"
     IF (UT .lt. 0) ERROR STOP "Hello!! UT<0 not allowed"    
@@ -300,6 +331,8 @@ subroutine HLTWIM(DAY,UT,GLAT,GLON,KP,W,MW)
     !CONVERT GEO LAT/LON TO QD LAT/LON
     if ((glat .ne. glatlast) .or. (glon .ne. glonlast)) then
         call gd2qd(glat,glon,mlat,mlon,f1e,f1n,f2e,f2n)
+        print *,"QLAT:",mlat
+        print *,"QLON:",mlon
     endif
     !COMPUTE QD MAGNETIC LOCAL TIME (LOW-PRECISION)
     if ((day .ne. daylast) .or. (ut .ne. utlast) .or. &
@@ -333,6 +366,81 @@ subroutine HLTWIM(DAY,UT,GLAT,GLON,KP,W,MW)
 
 end subroutine HLTWIM
 
+! subroutine HLTWIMQD(DAY,UT,MLAT,MLON,KP,W,MW)
+
+!     use base
+!     use base1
+!     implicit none
+
+!     INTEGER,intent(in)      :: DAY
+!     REAL(4),intent(in)      :: UT,MLAT,MLON
+!     REAL(4),intent(in)      :: KP
+!     REAL(4),intent(out)     :: W(2), MW(2)
+!     ! real(4), save           :: mlat, mlon, mlt
+!     real(4), save           :: mlt
+!     real(4)                 :: mmwind, mzwind
+!     real(4), save           :: f1e, f1n, f2e, f2n
+!     real(4), save           :: mlatlast=1.0e16, mlonlast=1.0e16
+!     real(4), save           :: daylast=1.0e16, utlast=1.0e16, kplast=1.0e16
+!     real(4), external       ::  mltcalc
+	
+!     xlat=mlat
+!     print *,"DAY:",DAY
+!     print *,"UT:",UT
+!     print *,"MLAT:",MLAT
+!     print *,"MLON:",MLON
+!     print *,"KP:",KP
+!     IF (DAY .le. 0) ERROR STOP "Hello!! day<=0 not allowed"
+!     IF (DAY .gt. 366) ERROR STOP "Hello!! day>366 not allowed"
+!     IF (UT .lt. 0) ERROR STOP "Hello!! UT<0 not allowed"    
+!     IF (UT .ge. 24) ERROR STOP "Hello!! UT>24 not allowed"
+!     IF (KP .lt. 0) ERROR STOP "Hello!! Kp< 0 not allowed"
+!     IF (KP .gt. 10) ERROR STOP "Hello!! Kp> 10 not allowed"
+!     IF (MLAT.GT.90) ERROR STOP "Hello!! MLAT>90 not allowed"
+!     IF (MLAT.lt.-90) ERROR STOP "Hello!! MLAT<-90 not allowed"
+
+!      if (baseinit) call inithltwim2()
+!     !CONVERT GEO LAT/LON TO QD LAT/LON
+!     ! if ((mlat .ne. mlatlast) .or. (glon .ne. glonlast)) then
+!     !     call gd2qd(glat,glon,mlat,mlon,f1e,f1n,f2e,f2n)
+!     !     print *,"QLAT:",mlat
+!     !     print *,"QLON:",mlon
+!     ! endif
+!     !COMPUTE QD MAGNETIC LOCAL TIME (LOW-PRECISION)
+!     if ((day .ne. daylast) .or. (ut .ne. utlast) .or. &
+!         (mlat .ne. mlatlast) .or. (mlon .ne. mlonlast)) then
+!         mlt = mltcalc(mlat,mlon,day,ut)
+!         print *,'mlt:',mlt
+!         print *,'mlat:',mlat
+!         print *,'mlon:',mlon
+!     endif
+
+!     !Replace calcuated winds with missing value when |mlat|<40
+!     IF ((mlat .gt. - 40).and.(mlat .lt. 40)) then
+!         MW(1) = -9999.0
+!         MW(2) = -9999.0
+!         W(1) = -9999.0
+!         W(2) = -9999.0
+!     else
+!         !RETRIEVE HLTWIM geomagnetic winds
+!         call HLTWIMx(day, mlt, mlat, kp, mlon, mmwind, mzwind)
+!         MW(1) = mmwind
+!         MW(2) = mzwind
+!         !CONVERT GEOMAGNETIC WINDS TO GEOGRAPHIC COORDINATES
+!         W(1) = f2n * mmwind + f1n * mzwind
+!         W(2) = f2e * mmwind + f1e * mzwind
+!     endif
+
+!     mlatlast = mlat
+!     mlonlast = mlon
+!     daylast = day
+!     utlast = ut
+!     kplast = kp
+
+!     return
+
+! end subroutine HLTWIMQD
+
 subroutine HLTWIMx(day, mlt, mlat, kp, mlon, mmwind, mzwind)
 
     use base
@@ -341,18 +449,34 @@ subroutine HLTWIMx(day, mlt, mlat, kp, mlon, mmwind, mzwind)
     implicit none
     
     INTEGER,intent(in)        :: day
-    real(4),intent(in)        :: mlt       !Magnetic local time (hours)
-    real(4),intent(in)        :: mlat      !Magnetic latitude (degrees)
-    real(4),intent(in)        :: kp        !3-hour Kp
-    real(4),intent(in)        :: mlon      !Magnetic Longitude (degree)
-    real(4),intent(out)       :: mmwind   !Meridional wind (+north, QD coordinates)
-    real(4),intent(out)       :: mzwind   !Zonal Wind (+east, QD coordinates)
+    ! ORIG
+    ! real(4),intent(in)        :: mlt       !Magnetic local time (hours)
+    ! real(4),intent(in)        :: mlat      !Magnetic latitude (degrees)
+    ! real(4),intent(in)        :: kp        !3-hour Kp
+    ! real(4),intent(in)        :: mlon      !Magnetic Longitude (degree)
+    ! real(4),intent(out)       :: mmwind   !Meridional wind (+north, QD coordinates)
+    ! real(4),intent(out)       :: mzwind   !Zonal Wind (+east, QD coordinates)
+    ! TRY
+    real(8),intent(in)        :: mlt       !Magnetic local time (hours)
+    real(8),intent(in)        :: mlat      !Magnetic latitude (degrees)
+    real(8),intent(in)        :: kp        !3-hour Kp
+    real(8),intent(in)        :: mlon      !Magnetic Longitude (degree)
+    real(8),intent(out)       :: mmwind   !Meridional wind (+north, QD coordinates)
+    real(8),intent(out)       :: mzwind   !Zonal Wind (+east, QD coordinates)
+    ! ENDTRY
     ! Local variables
     integer(4)                :: iterm, ivshterm, n, m, idoy, imlon
-    real(4)                   :: termvaltemp(0:1)
-    real(4),save              :: kpterms(0:2)
-    real(4)                   :: kptermsxx(0:1,0:2)
-    real(4),save              :: mltlast=1.e16, mlatlast=1.e16, kplast=1.e16, doylast=1.e16, mlonlast=1.e16
+    ! ORIG
+    ! real(4)                   :: termvaltemp(0:1)
+    ! real(4),save              :: kpterms(0:2)
+    ! real(4)                   :: kptermsxx(0:1,0:2)
+    ! real(4),save              :: mltlast=1.e16, mlatlast=1.e16, kplast=1.e16, doylast=1.e16, mlonlast=1.e16
+    ! TRY
+    real(8)                   :: termvaltemp(0:1)
+    real(8),save              :: kpterms(0:2)
+    real(8)                   :: kptermsxx(0:1,0:2)
+    real(8),save              :: mltlast=1.e16, mlatlast=1.e16, kplast=1.e16, doylast=1.e16, mlonlast=1.e16
+    ! ENDTRY
     real(8)                   :: theta, phi, mphi, xx, dxx, mlonx, mlonxx
 
     !LOAD MODEL PARAMETERS IF NECESSARY
@@ -519,7 +643,11 @@ module gd2qdc
     real(8), allocatable     :: shgradtheta(:)     !Array to hold spherical harmonic gradients
     real(8), allocatable     :: shgradphi(:)       !Array to hold spherical harmonic gradients
     real(8), allocatable     :: normadj(:)         !Adjustment to VSH normalization factor
+    ! ORIG
     real(4)                  :: epoch, alt
+    ! TRY
+    ! real(8)                  :: epoch, alt
+    ! ENDTRY
     real(8), parameter       :: pi = 3.1415926535897932d0
     real(8), parameter       :: dtor = pi/180.0d0
     real(8), parameter       :: sineps = 0.39781868d0
@@ -579,9 +707,14 @@ subroutine gd2qd(glatin,glon,qlat,qlon,f1e,f1n,f2e,f2n)
 
     implicit none
 
-    real(4), intent(in)         :: glatin, glon
-    real(4), intent(out)        :: qlat, qlon
-    real(4), intent(out)        :: f1e, f1n, f2e, f2n
+    ! real(4), intent(in)         :: glatin, glon
+    ! real(4), intent(out)        :: qlat, qlon
+    ! real(4), intent(out)        :: f1e, f1n, f2e, f2n
+    ! TRY
+    real(8), intent(in)         :: glatin, glon
+    real(8), intent(out)        :: qlat, qlon
+    real(8), intent(out)        :: f1e, f1n, f2e, f2n
+    ! ENDTRY
     integer(4)               :: n, m, i
     real(8)                  :: glat, theta, phi
     real(8)                  :: mphi, cosmphi, sinmphi
@@ -665,16 +798,21 @@ function mltcalc(qlat,qlon,day,ut)
 
     implicit none
 
-    real(4), intent(in)      :: qlat, qlon, ut
-    real(4)                  :: mltcalc
+    ! ORIG
+    ! real(4), intent(in)      :: qlat, qlon, ut
+    ! real(4)                  :: mltcalc
+    ! TRY
+    real(8), intent(in)      :: qlat, qlon, ut
+    real(8)                  :: mltcalc
+    ! ENDTRY
     Integer(4), intent(in)   :: day
     integer(4)               :: n, m, i
     real(8)                  :: asunglat, asunglon, asunqlon
     real(8)                  :: glat, theta, phi
     real(8)                  :: mphi, cosmphi, sinmphi
     real(8)                  :: x, y
-    real(8)                  :: cosqlat, cosqlon, sinqlon
-    real(8)                  :: qlonrad
+    ! real(8)                  :: cosqlat, cosqlon, sinqlon
+    ! real(8)                  :: qlonrad
 
     if (gd2qdinit) call initgd2qd()
 
@@ -720,11 +858,21 @@ subroutine kpspl3(kp, kpterms)
 
     implicit none
 
-    real(4), intent(in)       :: kp
-    real(4), intent(out)      :: kpterms(0:2)
+    ! ORIG
+    ! real(4), intent(in)       :: kp
+    ! real(4), intent(out)      :: kpterms(0:2)
+    ! TRY
+    real(8), intent(in)       :: kp
+    real(8), intent(out)      :: kpterms(0:2)
+    ! ENDTRY
     integer(4)                :: i, j
-    real(4)                   :: x, kpspl(0:6)
-    real(4), parameter        :: node(0:7)=(/-10., -8., 0., 2., 5., 6.5, 18., 20./)
+    ! ORIG
+    ! real(4)                   :: x, kpspl(0:6)
+    ! real(4), parameter        :: node(0:7)=(/-10., -8., 0., 2., 5., 6.5, 18., 20./)
+    ! TRY
+    real(8)                   :: x, kpspl(0:6)
+    real(8), parameter        :: node(0:7)=(/-10., -8., 0., 2., 5., 6.5, 18., 20./)
+    ! ENDTRY
 
     x = max(kp, 0.0)
     x = min(x,  6.5)

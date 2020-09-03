@@ -1,0 +1,1 @@
+gfortran -c hltwim.f90; gfortran -o testhead testhead.f90 hltwim.o; ./testhead 320 12 78.15 16.03 5

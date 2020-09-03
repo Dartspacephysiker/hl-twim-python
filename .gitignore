@@ -1,4 +1,7 @@
 #No compiled files
 *.so
 
-
+#No f2pywrapper stuff
+*f2pywrappers.f
+*f2pywrappers2.f90
+*module.c
