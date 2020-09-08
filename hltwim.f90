@@ -52,10 +52,14 @@ module Base
 
     integer(4)           :: nmaxhltwim = 0        ! maximum degree of the model
     integer(4)           :: mmaxhltwim = 0        ! maximum order of the model     
-    integer(4)           :: nmaxgeo = 0           ! maximum degree of coordinate coversion
-    integer(4)           :: mmaxgeo = 0           ! maximum order of coordinate coversion
-    real(8),allocatable  :: gpbar(:,:),gvbar(:,:),gwbar(:,:) ! alfs for geo coordinates
-    real(8),allocatable  :: spbar(:,:),svbar(:,:),swbar(:,:) ! alfs MLT calculation
+    ! integer(4)           :: nmaxgeo = 0           ! maximum degree of coordinate coversion
+    ! integer(4)           :: mmaxgeo = 0           ! maximum order of coordinate coversion
+    integer(4)           :: nmaxgeo = 8           ! maximum degree of coordinate coversion
+    integer(4)           :: mmaxgeo = 4           ! maximum order of coordinate coversion
+    ! real(8),allocatable  :: gpbar(:,:),gvbar(:,:),gwbar(:,:) ! alfs for geo coordinates
+    ! real(8),allocatable  :: spbar(:,:),svbar(:,:),swbar(:,:) ! alfs MLT calculation
+    real(8)  :: gpbar(0:8,0:4),gvbar(0:8,0:4),gwbar(0:8,0:4) ! alfs for geo coordinates
+    real(8)  :: spbar(0:8,0:4),svbar(0:8,0:4),swbar(0:8,0:4) ! alfs MLT calculation
     real(8)              :: glatalf = -1.d32
     ! ORIG
     ! real(4)              :: xlat=0.0
@@ -80,21 +84,30 @@ module base1
     real(4)                    :: coeffx(0:2175)          ! Model coefficients
     real(4)                    :: coeffx1(0:2175)          ! Model coefficients
     real(4)                    :: coeffx2(0:2175)          ! Model coefficients
-    real(4),allocatable        :: vshterms(:,:)     ! VSH basis values
+    ! real(4),allocatable        :: vshterms(:,:)     ! VSH basis values
+    real(4)        :: vshterms(0:1, 0:127)     ! VSH basis values
+
     ! real(4),allocatable        :: termval(:,:)      ! Term values to which coefficients are applied
     ! TRY
     ! real(8)                    :: coeffx(0:2175)          ! Model coefficients
     ! real(8)                    :: coeffx1(0:2175)          ! Model coefficients
     ! real(8)                    :: coeffx2(0:2175)          ! Model coefficients
     ! real(8),allocatable        :: vshterms(:,:)     ! VSH basis values
-    real(8),allocatable        :: termval(:,:)      ! Term values to which coefficients are applied
+    ! real(8),allocatable        :: termval(:,:)      ! Term values to which coefficients are applied
     ! ENDTRY
-    real(8),allocatable        :: dpbar(:,:)        ! Associated lengendre fns
-    real(8),allocatable        :: dvbar(:,:)        ! Associated lengendre fns
-    real(8),allocatable        :: dwbar(:,:)        ! Associated lengendre fns
-    real(8),allocatable        :: mltterms(:,:)     ! MLT Fourier terms
-    real(8),allocatable        :: doyterms(:,:)     ! MLT Fourier terms
-    real(8),allocatable        :: mlonterms(:,:)    ! MLT Fourier terms
+    ! real(8),allocatable        :: dpbar(:,:)        ! Associated lengendre fns
+    ! real(8),allocatable        :: dvbar(:,:)        ! Associated lengendre fns
+    ! real(8),allocatable        :: dwbar(:,:)        ! Associated lengendre fns
+    ! real(8),allocatable        :: mltterms(:,:)     ! MLT Fourier terms
+    ! real(8),allocatable        :: doyterms(:,:)     ! MLT Fourier terms
+    ! real(8),allocatable        :: mlonterms(:,:)    ! MLT Fourier terms
+    real(8)        :: termval(0:1, 0:2175)      ! Term values to which coefficients are applied
+    real(8)        :: dpbar(0:8,0:4)        ! Associated lengendre fns
+    real(8)        :: dvbar(0:8,0:4)        ! Associated lengendre fns
+    real(8)        :: dwbar(0:8,0:4)        ! Associated lengendre fns
+    real(8)        :: mltterms(0:4,0:1)     ! MLT Fourier terms
+    real(8)        :: doyterms(0:1,0:4)     ! MLT Fourier terms
+    real(8)        :: mlonterms(0:1,0:2)    ! MLT Fourier terms
     real(8), parameter         :: pi=3.1415926535897932
     real(8), parameter         :: dtor=pi/180.d0
     logical                    :: xinit = .true.
@@ -113,9 +126,12 @@ module alf
 
     integer(4)              :: nmax0,mmax0
     ! static normalizational coeffiecents
-    real(8), allocatable    :: anm(:,:),bnm(:,:),dnm(:,:)
-    real(8), allocatable    :: cm(:),en(:)
-    real(8), allocatable    :: marr(:),narr(:)
+    ! real(8), allocatable    :: anm(:,:),bnm(:,:),dnm(:,:)
+    ! real(8), allocatable    :: cm(:),en(:)
+    ! real(8), allocatable    :: marr(:),narr(:)
+    real(8)    :: anm(0:10, 0:3),bnm(0:10, 0:3),dnm(0:10, 0:3)
+    real(8)    :: cm(0:3),en(0:10)
+    real(8)    :: marr(0:3),narr(0:10)
 
 contains
 
@@ -175,14 +191,16 @@ contains
 
         nmax0 = nmaxin
         mmax0 = mmaxin
-        if (allocated(anm)) deallocate(anm, bnm, cm, dnm, en, marr, narr)
-        allocate( anm(0:nmax0, 0:mmax0) )
-        allocate( bnm(0:nmax0, 0:mmax0) )
-        allocate( cm(0:mmax0) )
-        allocate( dnm(0:nmax0, 0:mmax0) )
-        allocate( en(0:nmax0) )
-        allocate( marr(0:mmax0) )
-        allocate( narr(0:nmax0) )
+        print *,"nmax0:",nmax0
+        print *,"mmax0:",mmax0
+        ! if (allocated(anm)) deallocate(anm, bnm, cm, dnm, en, marr, narr)
+        ! allocate( anm(0:nmax0, 0:mmax0) )
+        ! allocate( bnm(0:nmax0, 0:mmax0) )
+        ! allocate( cm(0:mmax0) )
+        ! allocate( dnm(0:nmax0, 0:mmax0) )
+        ! allocate( en(0:nmax0) )
+        ! allocate( marr(0:mmax0) )
+        ! allocate( narr(0:nmax0) )
         do n = 1, nmax0
             narr(n) = dble(n)
             en(n)    = dsqrt(dble(n*(n+1)))
@@ -227,15 +245,18 @@ subroutine inithltwim1(nmaxout,mmaxout)
     read(23) nterm, mmax, nmax, termarr2, coeffx2
     close(23)
 
-    if (allocated(termval)) deallocate(termval,dpbar,dvbar,dwbar,mltterms,vshterms, doyterms,mlonterms)
+    ! if (allocated(termval)) deallocate(termval,dpbar,dvbar,dwbar,mltterms,vshterms, doyterms,mlonterms)
+    ! if (allocated(termval)) deallocate(termval)
     nvshterm = ( ((nmax+1)*(nmax+2) - (nmax-mmax)*(nmax-mmax+1))/2 - 1 ) * 4 - 2*nmax
+    print *,"nterm:",nterm
+    print *,"nvshterm:",nvshterm
     !nvshterm = 127.0 for nxm = 10x3
-    allocate(termval(0:1, 0:nterm-1))
-    allocate(dpbar(0:nmax,0:mmax),dvbar(0:nmax,0:mmax),dwbar(0:nmax,0:mmax))
-    allocate(mltterms(0:mmax,0:1))
-    allocate(doyterms(0:1,0:4))
-    allocate(mlonterms(0:1,0:2))
-    allocate(vshterms(0:1, 0:nvshterm-1))
+    ! allocate(termval(0:1, 0:nterm-1))
+    ! allocate(dpbar(0:nmax,0:mmax),dvbar(0:nmax,0:mmax),dwbar(0:nmax,0:mmax))
+    ! allocate(mltterms(0:mmax,0:1))
+    ! allocate(doyterms(0:1,0:4))
+    ! allocate(mlonterms(0:1,0:2))
+    ! allocate(vshterms(0:1, 0:nvshterm-1))
     dpbar = 0
     dvbar = 0
     dwbar = 0
@@ -262,17 +283,17 @@ subroutine inithltwim2()
     nmax0 = nmax
     mmax0 = mmax
     call initalf(nmax0,mmax0)
-    if (allocated(gpbar)) deallocate(gpbar,gvbar,gwbar)
-    allocate(gpbar(0:nmaxgeo,0:mmaxgeo))
-    allocate(gvbar(0:nmaxgeo,0:mmaxgeo))
-    allocate(gwbar(0:nmaxgeo,0:mmaxgeo))
+    ! if (allocated(gpbar)) deallocate(gpbar,gvbar,gwbar)
+    ! allocate(gpbar(0:nmaxgeo,0:mmaxgeo))
+    ! allocate(gvbar(0:nmaxgeo,0:mmaxgeo))
+    ! allocate(gwbar(0:nmaxgeo,0:mmaxgeo))
     gpbar = 0
     gvbar = 0
     gwbar = 0
-    if (allocated(spbar)) deallocate(spbar,svbar,swbar)
-    allocate(spbar(0:nmaxgeo,0:mmaxgeo))
-    allocate(svbar(0:nmaxgeo,0:mmaxgeo))
-    allocate(swbar(0:nmaxgeo,0:mmaxgeo))
+    ! if (allocated(spbar)) deallocate(spbar,svbar,swbar)
+    ! allocate(spbar(0:nmaxgeo,0:mmaxgeo))
+    ! allocate(svbar(0:nmaxgeo,0:mmaxgeo))
+    ! allocate(swbar(0:nmaxgeo,0:mmaxgeo))
     spbar = 0
     svbar = 0
     swbar = 0
@@ -318,14 +339,14 @@ subroutine HLTWIM(DAY,UT,GLAT,GLON,KP,W,MW)
     print *,"GLAT:",GLAT
     print *,"GLON:",GLON
     print *,"KP:",KP
-    IF (DAY .le. 0) ERROR STOP "Hello!! day<=0 not allowed"
-    IF (DAY .gt. 366) ERROR STOP "Hello!! day>366 not allowed"
-    IF (UT .lt. 0) ERROR STOP "Hello!! UT<0 not allowed"    
-    IF (UT .ge. 24) ERROR STOP "Hello!! UT>24 not allowed"
-    IF (KP .lt. 0) ERROR STOP "Hello!! Kp< 0 not allowed"
-    IF (KP .gt. 10) ERROR STOP "Hello!! Kp> 10 not allowed"
-    IF (GLAT.GT.90) ERROR STOP "Hello!! GLAT>90 not allowed"
-    IF (GLAT.lt.-90) ERROR STOP "Hello!! GLAT<-90 not allowed"
+    ! IF (DAY .le. 0) ERROR STOP "Hello!! day<=0 not allowed"
+    ! IF (DAY .gt. 366) ERROR STOP "Hello!! day>366 not allowed"
+    ! IF (UT .lt. 0) ERROR STOP "Hello!! UT<0 not allowed"    
+    ! IF (UT .ge. 24) ERROR STOP "Hello!! UT>24 not allowed"
+    ! IF (KP .lt. 0) ERROR STOP "Hello!! Kp< 0 not allowed"
+    ! IF (KP .gt. 10) ERROR STOP "Hello!! Kp> 10 not allowed"
+    ! IF (GLAT.GT.90) ERROR STOP "Hello!! GLAT>90 not allowed"
+    ! IF (GLAT.lt.-90) ERROR STOP "Hello!! GLAT<-90 not allowed"
 
      if (baseinit) call inithltwim2()
     !CONVERT GEO LAT/LON TO QD LAT/LON
@@ -635,14 +656,24 @@ module gd2qdc
 
     integer(4)               :: nterm, nmax, mmax  !Spherical harmonic expansion parameters
 
-    real(8), allocatable     :: coeff(:,:)         !Coefficients for spherical harmonic expansion
-    real(8), allocatable     :: xcoeff(:)          !Coefficients for x coordinate
-    real(8), allocatable     :: ycoeff(:)          !Coefficients for y coordinate
-    real(8), allocatable     :: zcoeff(:)          !Coefficients for z coordinate
-    real(8), allocatable     :: sh(:)              !Array to hold spherical harmonic fuctions
-    real(8), allocatable     :: shgradtheta(:)     !Array to hold spherical harmonic gradients
-    real(8), allocatable     :: shgradphi(:)       !Array to hold spherical harmonic gradients
-    real(8), allocatable     :: normadj(:)         !Adjustment to VSH normalization factor
+    ! real(8), allocatable     :: coeff(:,:)         !Coefficients for spherical harmonic expansion
+    ! real(8), allocatable     :: xcoeff(:)          !Coefficients for x coordinate
+    ! real(8), allocatable     :: ycoeff(:)          !Coefficients for y coordinate
+    ! real(8), allocatable     :: zcoeff(:)          !Coefficients for z coordinate
+    ! real(8), allocatable     :: sh(:)              !Array to hold spherical harmonic fuctions
+    ! real(8), allocatable     :: shgradtheta(:)     !Array to hold spherical harmonic gradients
+    ! real(8), allocatable     :: shgradphi(:)       !Array to hold spherical harmonic gradients
+    ! real(8), allocatable     :: normadj(:)         !Adjustment to VSH normalization factor
+
+    real(8)     :: coeff(0:60,0:2)         !Coefficients for spherical harmonic expansion
+    real(8)     :: xcoeff(0:60)          !Coefficients for x coordinate
+    real(8)     :: ycoeff(0:60)          !Coefficients for y coordinate
+    real(8)     :: zcoeff(0:60)          !Coefficients for z coordinate
+    real(8)     :: sh(0:60)              !Array to hold spherical harmonic fuctions
+    real(8)     :: shgradtheta(0:60)     !Array to hold spherical harmonic gradients
+    real(8)     :: shgradphi(0:60)       !Array to hold spherical harmonic gradients
+    real(8)     :: normadj(0:60)         !Adjustment to VSH normalization factor
+
     ! ORIG
     real(4)                  :: epoch, alt
     ! TRY
@@ -666,25 +697,36 @@ contains
 
         call findandopen(datafile,23)
         read(23) nmax, mmax, nterm, epoch, alt
-        if (allocated(coeff)) then
-            deallocate(coeff,xcoeff,ycoeff,zcoeff,sh,shgradtheta,shgradphi,normadj)
-        endif
-        allocate( coeff(0:nterm-1, 0:2) )
+        print *,"nmax:",nmax
+        print *,"mmax:",mmax
+        print *,"nterm:",nterm
+        print *,"epoch:",epoch
+        print *,"alt:",alt
+
+        ! if (allocated(coeff)) then
+        !     deallocate(coeff,xcoeff,ycoeff,zcoeff,sh,shgradtheta,shgradphi,normadj)
+        ! endif
+        ! if (allocated(coeff)) then
+        !     deallocate(coeff)
+        ! endif
+        ! allocate( coeff(0:nterm-1, 0:2) )
         read(23) coeff
         close(23)
 
-        allocate( xcoeff(0:nterm-1) )
-        allocate( ycoeff(0:nterm-1) )
-        allocate( zcoeff(0:nterm-1) )
-        allocate( sh(0:nterm-1) )
-        allocate( shgradtheta(0:nterm-1) )
-        allocate( shgradphi(0:nterm-1) )
-        allocate( normadj(0:nmax) )
+        ! allocate( xcoeff(0:nterm-1) )
+        ! allocate( ycoeff(0:nterm-1) )
+        ! allocate( zcoeff(0:nterm-1) )
+        ! allocate( sh(0:nterm-1) )
+        ! allocate( shgradtheta(0:nterm-1) )
+        ! allocate( shgradphi(0:nterm-1) )
+        ! allocate( normadj(0:nmax) )
 
         do iterm = 0, nterm-1
             xcoeff(iterm) = coeff(iterm,0)
             ycoeff(iterm) = coeff(iterm,1)
             zcoeff(iterm) = coeff(iterm,2)
+           ! print *,"xcoeff(iterm),ycoeff(iterm),zcoeff(iterm):",xcoeff(iterm),ycoeff(iterm),zcoeff(iterm)
+           ! print *,"ycoeff(iterm):",
         enddo
 
         do n = 0, nmax
@@ -874,8 +916,8 @@ subroutine kpspl3(kp, kpterms)
     real(8), parameter        :: node(0:7)=(/-10., -8., 0., 2., 5., 6.5, 18., 20./)
     ! ENDTRY
 
-    x = max(kp, 0.0)
-    x = min(x,  6.5)
+    x = max(kp, real(0.0,8))
+    x = min(x,  real(6.5,8))
     kpterms(0:2) = 0.0
     do i = 0, 6
         kpspl(i) = 0.0

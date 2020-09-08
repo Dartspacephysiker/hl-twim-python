@@ -16,7 +16,7 @@ PROGRAM MAIN
   num_args = command_argument_count()
   allocate(args(num_args))  ! I've omitted checking the return status of the allocation 
   
-  if (num_args .lt. 5) ERROR STOP "testhead DOY UT GLAT GLON KP"
+  ! if (num_args .lt. 5) ERROR STOP "testhead DOY UT GLAT GLON KP"
      
 
   do ix = 1, num_args
