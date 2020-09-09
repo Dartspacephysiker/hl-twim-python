@@ -113,7 +113,7 @@ module base1
     logical                    :: xinit = .true.
     character(128), parameter  :: xdefault1 = 'hltwimnorth.dat' !Fit coefficient file - North
     character(128), parameter  :: xdefault2 = 'hltwimsouth.dat' !Fit coefficient file - South
-    
+
 end module base1
 
 ! ################################################################################
@@ -191,8 +191,8 @@ contains
 
         nmax0 = nmaxin
         mmax0 = mmaxin
-        print *,"nmax0:",nmax0
-        print *,"mmax0:",mmax0
+        ! print *,"nmax0:",nmax0
+        ! print *,"mmax0:",mmax0
         ! if (allocated(anm)) deallocate(anm, bnm, cm, dnm, en, marr, narr)
         ! allocate( anm(0:nmax0, 0:mmax0) )
         ! allocate( bnm(0:nmax0, 0:mmax0) )
@@ -248,8 +248,8 @@ subroutine inithltwim1(nmaxout,mmaxout)
     ! if (allocated(termval)) deallocate(termval,dpbar,dvbar,dwbar,mltterms,vshterms, doyterms,mlonterms)
     ! if (allocated(termval)) deallocate(termval)
     nvshterm = ( ((nmax+1)*(nmax+2) - (nmax-mmax)*(nmax-mmax+1))/2 - 1 ) * 4 - 2*nmax
-    print *,"nterm:",nterm
-    print *,"nvshterm:",nvshterm
+    ! print *,"nterm:",nterm
+    ! print *,"nvshterm:",nvshterm
     !nvshterm = 127.0 for nxm = 10x3
     ! allocate(termval(0:1, 0:nterm-1))
     ! allocate(dpbar(0:nmax,0:mmax),dvbar(0:nmax,0:mmax),dwbar(0:nmax,0:mmax))
@@ -334,11 +334,11 @@ subroutine HLTWIM(DAY,UT,GLAT,GLON,KP,W,MW)
     ! ENDTRY
 	
     xlat=glat
-    print *,"DAY:",DAY
-    print *,"UT:",UT
-    print *,"GLAT:",GLAT
-    print *,"GLON:",GLON
-    print *,"KP:",KP
+    ! print *,"DAY:",DAY
+    ! print *,"UT:",UT
+    ! print *,"GLAT:",GLAT
+    ! print *,"GLON:",GLON
+    ! print *,"KP:",KP
     ! IF (DAY .le. 0) ERROR STOP "Hello!! day<=0 not allowed"
     ! IF (DAY .gt. 366) ERROR STOP "Hello!! day>366 not allowed"
     ! IF (UT .lt. 0) ERROR STOP "Hello!! UT<0 not allowed"    
@@ -352,8 +352,8 @@ subroutine HLTWIM(DAY,UT,GLAT,GLON,KP,W,MW)
     !CONVERT GEO LAT/LON TO QD LAT/LON
     if ((glat .ne. glatlast) .or. (glon .ne. glonlast)) then
         call gd2qd(glat,glon,mlat,mlon,f1e,f1n,f2e,f2n)
-        print *,"QLAT:",mlat
-        print *,"QLON:",mlon
+        ! print *,"QLAT:",mlat
+        ! print *,"QLON:",mlon
     endif
     !COMPUTE QD MAGNETIC LOCAL TIME (LOW-PRECISION)
     if ((day .ne. daylast) .or. (ut .ne. utlast) .or. &
@@ -697,11 +697,11 @@ contains
 
         call findandopen(datafile,23)
         read(23) nmax, mmax, nterm, epoch, alt
-        print *,"nmax:",nmax
-        print *,"mmax:",mmax
-        print *,"nterm:",nterm
-        print *,"epoch:",epoch
-        print *,"alt:",alt
+        ! print *,"nmax:",nmax
+        ! print *,"mmax:",mmax
+        ! print *,"nterm:",nterm
+        ! print *,"epoch:",epoch
+        ! print *,"alt:",alt
 
         ! if (allocated(coeff)) then
         !     deallocate(coeff,xcoeff,ycoeff,zcoeff,sh,shgradtheta,shgradphi,normadj)
@@ -958,7 +958,8 @@ subroutine findandopen(datafile,unitid)
         inquire(file=trim(datafile),exist=havefile)
         if (havefile) open(unit=unitid,file=trim(datafile),status='old',form='unformatted')
         if (.not. havefile) then
-            call get_environment_variable('HWMPATH',hwmpath)
+            call get_environment_variable('HWMPATH',hwmpath) !REMEMBER TO USE EXPORT
+            ! print *,"What is 'HWMPATH'? Here: ",hwmpath
             inquire(file=trim(hwmpath)//'/'//trim(datafile),exist=havefile)
             if (havefile) open(unit=unitid, &
                 file=trim(hwmpath)//'/'//trim(datafile),status='old',form='unformatted')
@@ -987,7 +988,7 @@ subroutine findandopen(datafile,unitid)
     if (havefile) then
         return
     else
-        print *,"Can not find file ",trim(datafile)
+        print *,"Can not find file ",datafile
         stop
     endif
 
